@@ -538,7 +538,7 @@ export default function Home() {
 
                 {/* Tags */}
                 <div className="mt-8 flex flex-wrap gap-2">
-                  {["Power BI", "SQL", "Python", "Node.js"].map((tag) => (
+                  {["Excel", "Power BI", "SQL", "Python", "Node.js", "REST API"].map((tag) => (
                     <span
                       key={tag}
                       className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
@@ -646,7 +646,7 @@ export default function Home() {
 
                 {/* Tags */}
                 <div className="mt-8 flex flex-wrap gap-2">
-                  {["Power BI", "Data Visualization", "Business Metrics"].map(
+                  {["Power BI", "Data Visualization", "Business Intelligence"].map(
                     (tag) => (
                       <span
                         key={tag}
