@@ -487,20 +487,6 @@ export default function Home() {
                   IT PROJECT SUPPORT INTERN
                 </p>
 
-                <p
-                  className={`mt-6 max-w-3xl font-glacial text-base leading-7 sm:text-lg ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Worked within the IT division, supporting data-driven
-                  reporting and internal digital solutions. The experience
-                  brought together dashboard development, data processing,
-                  and practical problem-solving in a real business
-                  environment.
-                </p>
-
                 {/* Highlights */}
                 <div className="mt-7 space-y-4">
                   <p
@@ -510,7 +496,10 @@ export default function Home() {
                         : "text-[#1c1412] before:bg-[#8f2d2d]"
                     }`}
                   >
-                    Built an invoice dashboard for management reporting.
+                    Developed a Power BI dashboard to monitor customer invoices,
+                    covering payment status, receivables aging, top customers, 
+                    and revenue by business segment, with DAX measures and
+                    interactive filters.
                   </p>
 
                   <p
@@ -520,8 +509,9 @@ export default function Home() {
                         : "text-[#1c1412] before:bg-[#8f2d2d]"
                     }`}
                   >
-                    Developed an internal WhatsApp help-desk chatbot and supported
-                    its integration with internal ticketing APIs.
+                    Built a WhatsApp help-desk chatbot using Python and Node.js,
+                    integrating internal ticketing APIs to create, check, forward, and
+                    close tickets, as well as handle password resets.
                   </p>
 
                   <p
@@ -531,14 +521,32 @@ export default function Home() {
                         : "text-[#1c1412] before:bg-[#8f2d2d]"
                     }`}
                   >
-                    Improved chatbot reliability through session handling,
-                    queueing, and API error-flow improvements.
+                    Added session locking and a lightweight queue to prevent duplicate
+                    requests and conflicts from concurrent messages, improving the
+                    reliability of chatbot interactions.
+                  </p>
+
+                  <p
+                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
+                      darkMode
+                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
+                        : "text-[#1c1412] before:bg-[#8f2d2d]"
+                    }`}
+                  >
+                    Standardized API error handling and user messages to prevent
+                    repeated prompts and unexpected failures across chatbot flows.
                   </p>
                 </div>
 
                 {/* Tags */}
                 <div className="mt-8 flex flex-wrap gap-2">
-                  {["Excel", "Power BI", "SQL", "Python", "Node.js", "REST API"].map((tag) => (
+                  {[
+                    "Power BI",
+                    "DAX",
+                    "Python",
+                    "Node.js",
+                    "REST API",
+                  ].map((tag) => (
                     <span
                       key={tag}
                       className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
@@ -583,7 +591,7 @@ export default function Home() {
                       : "text-[#1c1412]"
                   }`}
                 >
-                  Business Performance Dashboard Practicum
+                  Information Systems Department, ITS
                 </h3>
 
                 <p
@@ -593,20 +601,7 @@ export default function Home() {
                       : "text-[#8f2d2d]"
                   }`}
                 >
-                  TEACHING ASSISTANT
-                </p>
-
-                <p
-                  className={`mt-6 max-w-3xl font-glacial text-base leading-7 sm:text-lg ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Guided student teams in turning operational data into
-                  clear, interactive performance dashboards, with a focus
-                  on meaningful metrics, accurate reporting, and readable
-                  visualizations.
+                  TEACHING ASSISTANT · BUSINESS PERFORMANCE DASHBOARD PRACTICUM
                 </p>
 
                 {/* Highlights */}
@@ -618,7 +613,8 @@ export default function Home() {
                         : "text-[#1c1412] before:bg-[#8f2d2d]"
                     }`}
                   >
-                    Mentored 6 student groups throughout the practicum.
+                    Mentored 6 student groups with 60+ students in preparing operational
+                    data and building interactive Power BI performance dashboards.
                   </p>
 
                   <p
@@ -628,19 +624,9 @@ export default function Home() {
                         : "text-[#1c1412] before:bg-[#8f2d2d]"
                     }`}
                   >
-                    Guided students in structuring data and defining meaningful
-                    business metrics for dashboard development.
-                  </p>
-
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Reviewed dashboard layouts and provided feedback on data
-                    visualization and presentation.
+                    Guided students in defining business metrics and structuring data
+                    models, while reviewing dashboard layouts to improve accuracy and
+                    readability.
                   </p>
                 </div>
 
@@ -714,13 +700,14 @@ export default function Home() {
                     : "text-[#1c1412]/65"
                 }`}
               >
-                A selection of projects across data analytics, data engineering, and forecasting 
-                — built through coursework, experimentation, and hands-on problem solving.
+                A selection of projects across data analytics, data engineering,
+                and forecasting — built through coursework, experimentation,
+                and hands-on problem solving.
               </p>
             </div>
           </div>
 
-          {/* Project 01 */}
+          {/* Project 01 — Sales Analytics Dashboard */}
           <article
             className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
               darkMode
@@ -729,40 +716,70 @@ export default function Home() {
             }`}
           >
             {/* Visual */}
-            <div
-              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border ${
-                darkMode
-                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                  : "border-[#1c1412]/10 bg-[#eadfca]"
-              }`}
-            >
-              <img
-                src="/projects/kpi-dashboard.png"
-                alt="IT Performance and KPI Dashboard"
-                className="h-full w-full object-contain p-4"
-              />
+            <div>
+              <div
+                className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10 bg-[#241a18]"
+                    : "border-[#1c1412]/10 bg-[#eadfca]"
+                }`}
+              >
+                <img
+                  src="/projects/sales-dashboard.png"
+                  alt="Sales Analytics Dashboard"
+                  className="h-full w-full rounded-xl object-contain"
+                />
+              </div>
+
+              <a
+                href="https://app.powerbi.com/view?r=eyJrIjoiYjUxNzJkZDAtOGJkNi00MDQxLWI3ZGMtZjY4ZDBiYmJlNjZlIiwidCI6IjFkNTE2OWFjLWM3Y2ItNDI3NS05NzY0LWJmOGM5YzM2NGE0YyIsImMiOjEwfQ%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`group mt-4 inline-flex items-center gap-3 border-b pb-1 font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                  darkMode
+                    ? "border-[#d9a9a9] text-[#d9a9a9] hover:text-[#f2e8d5]"
+                    : "border-[#8f2d2d] text-[#8f2d2d] hover:text-[#752323]"
+                }`}
+              >
+                View Dashboard
+                <span className="text-base transition-transform duration-200 group-hover:translate-x-1">
+                  ↗
+                </span>
+              </a>
             </div>
 
             {/* Content */}
             <div>
-              <p
-                className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                  darkMode
-                    ? "text-[#d9a9a9]"
-                    : "text-[#8f2d2d]"
-                }`}
-              >
-                01 / DASHBOARD
-              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  01 / BUSINESS INTELLIGENCE
+                </p>
+
+                <span
+                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
+                    darkMode
+                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                      : "border-[#1c1412]/15 text-[#1c1412]/60"
+                  }`}
+                >
+                  Self-Initiated Project
+                </span>
+              </div>
 
               <h3
-                className={`font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
+                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
                   darkMode
                     ? "text-[#f2e8d5]"
                     : "text-[#1c1412]"
                 }`}
               >
-                IT Performance & KPI Dashboard
+                Sales Analytics Dashboard
               </h3>
 
               <p
@@ -772,8 +789,9 @@ export default function Home() {
                     : "text-[#1c1412]/65"
                 }`}
               >
-                Turning IT performance data into a clearer view of
-                organizational performance and strategic targets.
+                An interactive sales analytics dashboard built to explore revenue, 
+                product performance, and customer purchasing behavior across sales 
+                channels, store locations, and product categories from 2021–2025.
               </p>
 
               <div className="mt-8 space-y-6">
@@ -795,10 +813,9 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    An interactive dashboard based on the IT Balanced
-                    Scorecard framework, bringing key performance
-                    indicators and supporting datasets into one visual
-                    reporting interface.
+                    Designed a 10-table PostgreSQL database for retail sales with 
+                    13k+ customers and 100k+ synthetic orders, then used Power BI 
+                    to analyze sales performance and customer behavior.
                   </p>
                 </div>
 
@@ -820,31 +837,33 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    Designed performance indicators, prepared datasets,
-                    and developed dashboard visualizations for monitoring
-                    and reporting.
+                    Built SQL validation and rebuild logic, developed DAX measures 
+                    for profit margin and customer segmentation, and created custom 
+                    SVG/HTML visuals with dynamic CSS tooltips.
                   </p>
                 </div>
               </div>
 
               <div className="mt-8 flex flex-wrap gap-2">
-                {["Excel", "Power BI", "Power Query", "DAX"].map((tag) => (
-                  <span
-                    key={tag}
-                    className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                      darkMode
-                        ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                        : "border-[#1c1412]/15 text-[#1c1412]/60"
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
+                {["PostgreSQL", "Power BI", "DAX", "SVG / HTML"].map(
+                  (tag) => (
+                    <span
+                      key={tag}
+                      className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
+                        darkMode
+                          ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                          : "border-[#1c1412]/15 text-[#1c1412]/60"
+                      }`}
+                    >
+                      {tag}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </article>
 
-          {/* Project 02 */}
+          {/* Project 02 — Traffic Load Forecasting */}
           <article
             className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
               darkMode
@@ -854,24 +873,36 @@ export default function Home() {
           >
             {/* Content */}
             <div>
-              <p
-                className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                  darkMode
-                    ? "text-[#d9a9a9]"
-                    : "text-[#8f2d2d]"
-                }`}
-              >
-                02 / DATA ENGINEERING
-              </p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  02 / FORECASTING
+                </p>
+
+                <span
+                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
+                    darkMode
+                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                      : "border-[#1c1412]/15 text-[#1c1412]/60"
+                  }`}
+                >
+                  Undergraduate Thesis
+                </span>
+              </div>
 
               <h3
-                className={`font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
+                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
                   darkMode
                     ? "text-[#f2e8d5]"
                     : "text-[#1c1412]"
                 }`}
               >
-                Data Integration & Warehousing
+                Traffic Load Forecasting on Weighbridge with Hybrid TCN-BiLSTM
               </h3>
 
               <p
@@ -881,8 +912,8 @@ export default function Home() {
                     : "text-[#1c1412]/65"
                 }`}
               >
-                Structuring raw operational data into a more consistent
-                foundation for analytical use.
+                Forecasting daily truck volume from weighbridge data to support
+                `maintenance scheduling and identify predicted low-traffic periods.
               </p>
 
               <div className="mt-8 space-y-6">
@@ -904,9 +935,9 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    A data warehouse and ETL pipeline using Pentaho Data
-                    Integration to transform raw operational data into
-                    structured analytical data.
+                    Forecasted daily truck volume from 731 observations across 2024–2025
+                    using TCN, BiLSTM, and a hybrid TCN-BiLSTM model with first-order
+                    differencing.
                   </p>
                 </div>
 
@@ -928,14 +959,16 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    Designed fact and dimension tables and implemented
-                    ETL processes to support data consistency and reporting.
+                    Compared forecasting performance across models, analyzed the impact
+                    of volatility and missing external factors on prediction error, and
+                    built a Streamlit app to display forecasts and recommend maintenance
+                    dates.
                   </p>
                 </div>
               </div>
 
               <div className="mt-8 flex flex-wrap gap-2">
-                {["Pentaho Data Integration", "SQL"].map((tag) => (
+                {["Python", "TensorFlow/Keras", "Streamlit"].map((tag) => (
                   <span
                     key={tag}
                     className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
@@ -950,6 +983,32 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Visual */}
+            <div>
+              <div
+                className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10 bg-[#241a18]"
+                    : "border-[#1c1412]/10 bg-[#eadfca]"
+                }`}
+              >
+                <img
+                  src="/projects/undergraduate-thesis.png"
+                  alt="Traffic Load Forecasting on Weighbridge with Hybrid TCN-BiLSTM"
+                  className="h-full w-full rounded-xl object-contain"
+                />
+              </div>
+            </div>
+          </article>
+
+          {/* Project 03 — Data Integration & Warehousing */}
+          <article
+            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
+              darkMode
+                ? "border-[#f2e8d5]/15"
+                : "border-[#1c1412]/15"
+            }`}
+          >
             {/* Visual */}
             <div
               className={`flex aspect-[4/3] flex-col justify-center gap-4 overflow-hidden rounded-2xl border p-5 ${
@@ -974,51 +1033,39 @@ export default function Home() {
                 />
               </div>
             </div>
-          </article>
-
-          {/* Project 03 */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Visual */}
-            <div
-              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border ${
-                darkMode
-                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                  : "border-[#1c1412]/10 bg-[#eadfca]"
-              }`}
-            >
-              <img
-                src="/projects/forecasting.png"
-                alt="Time Series Forecasting project"
-                className="h-full w-full object-contain p-4"
-              />
-            </div>
 
             {/* Content */}
             <div>
-              <p
-                className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                  darkMode
-                    ? "text-[#d9a9a9]"
-                    : "text-[#8f2d2d]"
-                }`}
-              >
-                03 / FORECASTING
-              </p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  03 / DATA ENGINEERING
+                </p>
+
+                <span
+                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
+                    darkMode
+                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                      : "border-[#1c1412]/15 text-[#1c1412]/60"
+                  }`}
+                >
+                  Academic Project
+                </span>
+              </div>
 
               <h3
-                className={`font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
+                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
                   darkMode
                     ? "text-[#f2e8d5]"
                     : "text-[#1c1412]"
                 }`}
               >
-                Time Series Forecasting for Airport Passenger Prediction
+                Data Integration & Warehousing for Participant Selection Tools
               </h3>
 
               <p
@@ -1028,8 +1075,8 @@ export default function Home() {
                     : "text-[#1c1412]/65"
                 }`}
               >
-                Exploring different time-series approaches to understand
-                and forecast passenger traffic.
+                A data integration and warehousing project focused on transforming
+                multiple MySQL source tables into a structured analytical data warehouse.
               </p>
 
               <div className="mt-8 space-y-6">
@@ -1051,10 +1098,9 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    Forecasted passenger traffic at Sultan Aji Muhammad
-                    Sulaiman Sepinggan International Airport using
-                    statistical, deep learning, and hybrid time-series
-                    models.
+                    Built 6 Pentaho ETL transformations orchestrated by one job to load
+                    a provided star schema with 3 fact tables and 5 dimension tables from
+                    16 MySQL source tables.
                   </p>
                 </div>
 
@@ -1076,14 +1122,15 @@ export default function Home() {
                         : "text-[#1c1412]"
                     }`}
                   >
-                    Compared SARIMA, LSTM, and hybrid SARIMA–LSTM models
-                    through preprocessing, model tuning, and evaluation.
+                    Implemented surrogate keys, Insert/Update logic, lookups, and
+                    JavaScript parsing, including a 40+ attribute applicant dimension,
+                    then validated the output against an instructor-provided reference database.
                   </p>
                 </div>
               </div>
 
               <div className="mt-8 flex flex-wrap gap-2">
-                {["Excel", "Google Colab", "Python"].map((tag) => (
+                {["Pentaho Data Integration", "MySQL", "ETL / ELT", "Data Warehousing"].map((tag) => (
                   <span
                     key={tag}
                     className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
@@ -1095,6 +1142,278 @@ export default function Home() {
                     {tag}
                   </span>
                 ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Project 04 — IT Performance & KPI Dashboard */}
+          <article
+            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
+              darkMode
+                ? "border-[#f2e8d5]/15"
+                : "border-[#1c1412]/15"
+            }`}
+          >
+            {/* Content */}
+            <div>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  04 / DASHBOARD
+                </p>
+
+                <span
+                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
+                    darkMode
+                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                      : "border-[#1c1412]/15 text-[#1c1412]/60"
+                  }`}
+                >
+                  Academic Project
+                </span>
+              </div>
+
+              <h3
+                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
+                  darkMode
+                    ? "text-[#f2e8d5]"
+                    : "text-[#1c1412]"
+                }`}
+              >
+                IT Performance & KPI Dashboard
+              </h3>
+
+              <p
+                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
+                  darkMode
+                    ? "text-[#cfc2ad]"
+                    : "text-[#1c1412]/65"
+                }`}
+              >
+                An interactive Power BI dashboard designed to visualize IT performance
+                through defined KPIs, targets, and the four perspectives of the IT
+                Balanced Scorecard.
+              </p>
+
+              <div className="mt-8 space-y-6">
+                <div>
+                  <p
+                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                      darkMode
+                        ? "text-[#d9a9a9]"
+                        : "text-[#8f2d2d]"
+                    }`}
+                  >
+                    What I Explored
+                  </p>
+
+                  <p
+                    className={`font-glacial text-sm leading-6 sm:text-base ${
+                      darkMode
+                        ? "text-[#f2e8d5]"
+                        : "text-[#1c1412]"
+                    }`}
+                  >
+                    Designed IT performance metrics and targets across the four IT Balanced
+                    Scorecard perspectives using simulated operational data.
+                  </p>
+                </div>
+
+                <div>
+                  <p
+                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                      darkMode
+                        ? "text-[#d9a9a9]"
+                        : "text-[#8f2d2d]"
+                    }`}
+                  >
+                    Key Work
+                  </p>
+
+                  <p
+                    className={`font-glacial text-sm leading-6 sm:text-base ${
+                      darkMode
+                        ? "text-[#f2e8d5]"
+                        : "text-[#1c1412]"
+                    }`}
+                  >
+                    Built an interactive Power BI dashboard with KPI visualizations and
+                    performance indicators to support monitoring of IT performance and
+                    highlight gaps against defined targets.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-2">
+                {["Power BI", "DAX", "IT Balanced Scorecard", "KPI Design"].map((tag) => (
+                  <span
+                    key={tag}
+                    className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
+                      darkMode
+                        ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                        : "border-[#1c1412]/15 text-[#1c1412]/60"
+                    }`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Visual */}
+            <div
+              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border ${
+                darkMode
+                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
+                  : "border-[#1c1412]/10 bg-[#eadfca]"
+              }`}
+            >
+              <img
+                src="/projects/kpi-dashboard.png"
+                alt="IT Performance and KPI Dashboard"
+                className="h-full w-full object-contain p-4"
+              />
+            </div>
+          </article>
+
+          {/* Project 05 — Route Optimization */}
+          <article
+            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
+              darkMode
+                ? "border-[#f2e8d5]/15"
+                : "border-[#1c1412]/15"
+            }`}
+          >
+            {/* Visual */}
+            <div
+              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
+                darkMode
+                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
+                  : "border-[#1c1412]/10 bg-[#eadfca]"
+              }`}
+            >
+              <img
+                src="/projects/route-optimization.png"
+                alt="Route Optimization for Health Inspectors in Jakarta"
+                className="h-full w-full rounded-xl object-contain"
+              />
+            </div>
+
+            {/* Content */}
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  05 / OPTIMIZATION
+                </p>
+
+                <span
+                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
+                    darkMode
+                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                      : "border-[#1c1412]/15 text-[#1c1412]/60"
+                  }`}
+                >
+                  Academic Project
+                </span>
+              </div>
+
+              <h3
+                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
+                  darkMode
+                    ? "text-[#f2e8d5]"
+                    : "text-[#1c1412]"
+                }`}
+              >
+                Multi-Location Route Optimization for Health Inspectors
+              </h3>
+
+              <p
+                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
+                  darkMode
+                    ? "text-[#cfc2ad]"
+                    : "text-[#1c1412]/65"
+                }`}
+              >
+                A route optimization project for planning health inspection visits across
+                multiple hospitals in Jakarta while accounting for time-window constraints.
+              </p>
+
+              <div className="mt-8 space-y-6">
+                <div>
+                  <p
+                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                      darkMode
+                        ? "text-[#d9a9a9]"
+                        : "text-[#8f2d2d]"
+                    }`}
+                  >
+                    What I Explored
+                  </p>
+
+                  <p
+                    className={`font-glacial text-sm leading-6 sm:text-base ${
+                      darkMode
+                        ? "text-[#f2e8d5]"
+                        : "text-[#1c1412]"
+                    }`}
+                  >
+                    Modeled a Vehicle Routing Problem with Time Windows (VRPTW) for 60
+                    hospitals in Jakarta, grouping them into 6 balanced clusters of 10
+                    using constrained K-Means.
+                  </p>
+                </div>
+
+                <div>
+                  <p
+                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                      darkMode
+                        ? "text-[#d9a9a9]"
+                        : "text-[#8f2d2d]"
+                    }`}
+                  >
+                    Key Work
+                  </p>
+
+                  <p
+                    className={`font-glacial text-sm leading-6 sm:text-base ${
+                      darkMode
+                        ? "text-[#f2e8d5]"
+                        : "text-[#1c1412]"
+                    }`}
+                  >
+                    Implemented Particle Swarm Optimization (PSO) for each cluster and
+                    compared it with three other algorithms as part of the team, with PSO
+                    producing the lowest total cost and distance of 215 km.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-2">
+                {["Python", "PSO", "VRPTW"].map(
+                  (tag) => (
+                    <span
+                      key={tag}
+                      className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
+                        darkMode
+                          ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
+                          : "border-[#1c1412]/15 text-[#1c1412]/60"
+                      }`}
+                    >
+                      {tag}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </article>
@@ -1136,12 +1455,12 @@ export default function Home() {
           </div>
 
           {/* Journey Items */}
-          <div className="grid gap-12 pt-12 md:grid-cols-3 md:gap-8 lg:gap-10">
+          <div className="grid gap-14 pt-12 md:grid-cols-2 md:gap-16">
 
             {/* Journey 01 */}
-            <article>
+            <article className="mx-auto w-full max-w-[360px]">
               <div
-                className={`aspect-[4/3] overflow-hidden rounded-2xl border ${
+                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
                   darkMode
                     ? "border-[#f2e8d5]/10"
                     : "border-[#1c1412]/10"
@@ -1182,10 +1501,10 @@ export default function Home() {
                       : "text-[#1c1412]/65"
                   }`}
                 >
-                  Supported administrative and operational activities
-                  within the division, while contributing to fundraising
-                  initiatives and event financial management as Treasurer
-                  of SINERGI.
+                  Managed division administration and ran TABMAS fundraising drives
+                  supporting Information Systems community members facing hardship,
+                  while serving as Treasurer for the SINERGI event and overseeing its
+                  budget and financial planning.
                 </p>
 
                 <span
@@ -1201,9 +1520,9 @@ export default function Home() {
             </article>
 
             {/* Journey 02 */}
-            <article>
+            <article className="mx-auto w-full max-w-[360px]">
               <div
-                className={`aspect-[4/3] overflow-hidden rounded-2xl border ${
+                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
                   darkMode
                     ? "border-[#f2e8d5]/10"
                     : "border-[#1c1412]/10"
@@ -1244,18 +1563,17 @@ export default function Home() {
                       : "text-[#1c1412]/65"
                   }`}
                 >
-                  Led the planning, procurement, and distribution of meals
-                  for attendees and staff, while supervising team members
-                  and coordinating  with vendors to manage quality and budget
-                  efficiency.
+                  Led a team of 8 in planning, vendor negotiation, and procurement
+                  of meals for 300+ attendees and staff across multiple events,
+                  delivering on time and within budget.
                 </p>
               </div>
             </article>
 
             {/* Journey 03 */}
-            <article>
+            <article className="mx-auto w-full max-w-[360px]">
               <div
-                className={`aspect-[4/3] overflow-hidden rounded-2xl border ${
+                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
                   darkMode
                     ? "border-[#f2e8d5]/10"
                     : "border-[#1c1412]/10"
@@ -1296,14 +1614,298 @@ export default function Home() {
                       : "text-[#1c1412]/65"
                   }`}
                 >
-                  Managed budgeting, procurement, financial reporting,
-                  and meal distribution for an event serving hundreds
-                  to thousands of attendees and staff.
+                  Managed a consumption budget of IDR 50 million+ for 1,000+ attendees
+                  and staff, tracking finances in Google Sheets and keeping spending
+                  within budget.
+                </p>
+              </div>
+            </article>
+
+            {/* Journey 04 */}
+            <article className="mx-auto w-full max-w-[360px]">
+              <div
+                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10"
+                    : "border-[#1c1412]/10"
+                }`}
+              >
+                <img
+                  src="/journey/gerigi.jpeg"
+                  alt="GERIGI ITS 2023"
+                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+                />
+              </div>
+
+              <div className="mt-6">
+                <h3
+                  className={`font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em] ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  GERIGI ITS 2023
+                </h3>
+
+                <p
+                  className={`font-space-mono mt-3 text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  Treasurer of Consumption
+                </p>
+
+                <p
+                  className={`font-glacial mt-4 text-sm leading-6 sm:text-base ${
+                    darkMode
+                      ? "text-[#cfc2ad]"
+                      : "text-[#1c1412]/65"
+                  }`}
+                >
+                  Managed an IDR 130 million+ meal budget, vendor negotiations,
+                  and expense tracking for a 3-day orientation serving 6,500+
+                  freshmen and committee members.
                 </p>
               </div>
             </article>
 
           </div>
+
+          {/* Learning & Credentials */}
+          <div className="mt-20 border-t pt-12">
+            <div className="mb-10">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <h3
+                  className={`font-glacial max-w-3xl text-3xl font-bold leading-[1.1] tracking-[-0.02em] sm:text-4xl ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  Learning &amp; Credentials
+                </h3>
+              </div>
+            </div>
+
+            <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
+
+              {/* Credential 01 */}
+              <div
+                className={`border-b py-8 md:border-r md:pr-8 ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10"
+                    : "border-[#1c1412]/10"
+                }`}
+              >
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  MySkill
+                </p>
+
+                <h4
+                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  Data Analysis
+                </h4>
+
+                <p
+                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
+                    darkMode
+                      ? "text-[#cfc2ad]/65"
+                      : "text-[#1c1412]/50"
+                  }`}
+                >
+                  Issued Sep 2026
+                </p>
+
+                <p
+                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
+                    darkMode
+                      ? "text-[#cfc2ad]"
+                      : "text-[#1c1412]/65"
+                  }`}
+                >
+                  Covered statistical analysis, business and product metrics, cohort 
+                  and retention analysis, regression, hypothesis testing, clustering, 
+                  and data visualization.
+                </p>
+              </div>
+
+              {/* Credential 02 */}
+              <div
+                className={`border-b py-8 md:pl-8 ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10"
+                    : "border-[#1c1412]/10"
+                }`}
+              >
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  Cisco Networking Academy
+                </p>
+
+                <h4
+                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  DevNet Associate
+                </h4>
+
+                <p
+                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
+                    darkMode
+                      ? "text-[#cfc2ad]/65"
+                      : "text-[#1c1412]/50"
+                  }`}
+                >
+                  Issued Sep 2025
+                </p>
+
+                <p
+                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
+                    darkMode
+                      ? "text-[#cfc2ad]"
+                      : "text-[#1c1412]/65"
+                  }`}
+                >
+                  Built familiarity with Python, Git, APIs, networking, infrastructure 
+                  automation, application deployment and security, and Cisco platforms 
+                  through hands-on learning.
+                </p>
+              </div>
+
+              {/* Credential 03 */}
+              <div
+                className={`py-8 md:border-r md:pr-8 ${
+                  darkMode
+                    ? "border-[#f2e8d5]/10"
+                    : "border-[#1c1412]/10"
+                }`}
+              >
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  Google Cloud Skills Boost
+                </p>
+
+                <h4
+                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  Boost Productivity with Gemini in BigQuery
+                </h4>
+
+                <p
+                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
+                    darkMode
+                      ? "text-[#cfc2ad]/65"
+                      : "text-[#1c1412]/50"
+                  }`}
+                >
+                  Issued Mar 2025
+                </p>
+
+                <p
+                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
+                    darkMode
+                      ? "text-[#cfc2ad]"
+                      : "text-[#1c1412]/65"
+                  }`}
+                >
+                  Focused on Gemini in BigQuery for data exploration and preparation, 
+                  code generation and troubleshooting, workflow discovery, and visualization 
+                  through interactive labs.
+                </p>
+              </div>
+
+              {/* Credential 04 */}
+              <div className="py-8 md:pl-8">
+                <p
+                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
+                    darkMode
+                      ? "text-[#d9a9a9]"
+                      : "text-[#8f2d2d]"
+                  }`}
+                >
+                  Google Cloud Skills Boost
+                </p>
+
+                <h4
+                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
+                    darkMode
+                      ? "text-[#f2e8d5]"
+                      : "text-[#1c1412]"
+                  }`}
+                >
+                  Secure BigLake Data
+                </h4>
+
+                <p
+                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
+                    darkMode
+                      ? "text-[#cfc2ad]/65"
+                      : "text-[#1c1412]/50"
+                  }`}
+                >
+                  Issued Feb 2025
+                </p>
+
+                <p
+                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
+                    darkMode
+                      ? "text-[#cfc2ad]"
+                      : "text-[#1c1412]/65"
+                  }`}
+                >
+                  Practiced securing lakehouse data using IAM, BigQuery, Lakehouse,
+                  and Data Catalog, including creating and securing lakehouse tables.
+                </p>
+              </div>
+
+            </div>
+
+            {/* More Credentials */}
+            <a
+              href="LINKEDIN_URL_KAMU"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-8 inline-flex border-b pb-1 font-space-mono text-xs font-bold uppercase tracking-[0.04em] transition-colors ${
+                darkMode
+                  ? "border-[#d9a9a9] text-[#d9a9a9] hover:text-[#f2e8d5]"
+                  : "border-[#8f2d2d] text-[#8f2d2d] hover:text-[#752323]"
+              }`}
+            >
+              More credentials on LinkedIn ↗
+            </a>
+          </div>
+          
         </div>
       </section>
 
