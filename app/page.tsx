@@ -1,45 +1,117 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import {
+  ABOUT_DESCRIPTION,
+  ABOUT_HEADLINE,
+  ABOUT_INFO,
+  CERTIFICATIONS,
+  CERTIFICATIONS_HEADLINE,
+  CERTIFICATIONS_INTRO,
+  CERTIFICATIONS_LINK_LABEL,
+  CONTACT_INTRO,
+  CONTACT_LINKEDIN_LABEL,
+  EMAIL,
+  EXPERIENCES,
+  EXPERIENCE_HEADLINE,
+  EXPERIENCE_INTRO,
+  JOURNEY,
+  JOURNEY_HEADLINE,
+  JOURNEY_INTRO,
+  LINKEDIN_URL,
+  PROJECTS,
+  PROJECTS_HEADLINE,
+  PROJECTS_INTRO,
+} from "./content";
+
+const NAV_ITEMS = [
+  "About",
+  "Experience",
+  "Projects",
+  "Certifications",
+  "Leadership",
+  "Contact",
+];
+
+function Rich({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("**").map((part, i) =>
+        i % 2 === 1 ? (
+          <strong key={i} className="font-bold">
+            {part}
+          </strong>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [toolsVisible, setToolsVisible] = useState(false);
-  const toolsRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
 
-  {/* Tools animation */}
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2000);
+    } catch {
+      /* abaikan */
+    }
+  };
+
+  {/* Theme */}
   useEffect(() => {
-    const element = toolsRef.current;
-
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setToolsVisible(true);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.25,
-      }
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
+    try {
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setDarkMode(saved ? saved === "dark" : prefersDark);
+    } catch {
+      /* localStorage tidak tersedia: tetap pakai mode terang */
+    }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  const toggleTheme = () => {
+    const next = !darkMode;
+
+    const applyTheme = () => {
+      flushSync(() => setDarkMode(next));
+      document.documentElement.classList.toggle("dark", next);
+    };
+
+    const doc = document as Document & {
+      startViewTransition?: (callback: () => void) => unknown;
+    };
+
+    if (doc.startViewTransition) {
+      doc.startViewTransition(applyTheme);
+    } else {
+      setDarkMode(next);
+    }
+
+    try {
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch {
+      /* abaikan */
+    }
+  };
 
   {/* Active navigation section */}
   useEffect(() => {
-    const sections = [
-      "about",
-      "experience",
-      "projects",
-      "journey",
-      "contact",
-    ];
+    const sections = NAV_ITEMS.map((item) => item.toLowerCase());
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -72,105 +144,120 @@ export default function Home() {
   }, []);
 
   return (
-    <main
-      className={`min-h-screen transition-colors duration-500 ${
-        darkMode
-          ? "bg-[#1c1412] text-[#f2e8d5]"
-          : "bg-[#f2e8d5] text-[#1c1412]"
-      }`}
-    >
+    <main className="min-h-screen bg-paper text-ink">
       {/* Navigation */}
-      <nav
-        className={`fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md transition-colors duration-500 ${
-          darkMode
-            ? "border-[#f2e8d5]/10 bg-[#1c1412]/85"
-            : "border-[#1c1412]/10 bg-[#f2e8d5]/85"
-        }`}
-      >
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
-          
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-ink/10 bg-paper/85 backdrop-blur-md">
+        <div className="mx-auto flex h-20 max-w-[1200px] items-center justify-between px-12 lg:px-20">
+
           {/* Logo */}
           <a
             href="#home"
-            className={`font-space-mono text-sm font-bold tracking-[0.08em] transition-colors ${
-              darkMode ? "text-[#f2e8d5]" : "text-[#1c1412]"
-            }`}
+            className="font-space-mono text-sm font-bold tracking-[0.08em]"
           >
             Naifa.
           </a>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (desktop) */}
           <div className="hidden items-center gap-8 md:flex">
-            {["About", "Experience", "Projects", "Journey", "Contact"].map(
-              (item) => {
-                const sectionId = item.toLowerCase();
-                const isActive = activeSection === sectionId;
+            {NAV_ITEMS.map((item) => {
+              const sectionId = item.toLowerCase();
+              const isActive = activeSection === sectionId;
 
-                return (
-                  <a
-                    key={item}
-                    href={`#${sectionId}`}
-                    className={`group relative inline-block font-glacial text-sm transition-all duration-200 hover:scale-[1.04] ${
+              return (
+                <a
+                  key={item}
+                  href={`#${sectionId}`}
+                  className={`group relative inline-block font-glacial text-sm transition-all duration-200 hover:scale-[1.04] ${
+                    isActive
+                      ? "font-bold text-accent"
+                      : "text-ink/65 hover:text-accent"
+                  }`}
+                >
+                  {item}
+
+                  {/* Underline */}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-px w-full origin-left bg-accent transition-transform duration-200 ${
                       isActive
-                        ? darkMode
-                          ? "font-bold text-[#d9a9a9]"
-                          : "font-bold text-[#8f2d2d]"
-                        : darkMode
-                          ? "text-[#f2e8d5]/65 hover:text-[#d9a9a9]"
-                          : "text-[#1c1412]/65 hover:text-[#8f2d2d]"
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
                     }`}
-                  >
-                    {item}
-
-                    {/* Underline */}
-                    <span
-                      className={`absolute -bottom-1 left-0 h-[1px] w-full origin-left transition-transform duration-200 ${
-                        isActive
-                          ? "scale-x-100"
-                          : "scale-x-0 group-hover:scale-x-100"
-                      } ${
-                        darkMode
-                          ? "bg-[#d9a9a9]"
-                          : "bg-[#8f2d2d]"
-                      }`}
-                    />
-                  </a>
-                );
-              }
-            )}
+                  />
+                </a>
+              );
+            })}
           </div>
 
           {/* Right Side */}
           <div className="flex items-center gap-3">
-            
+
             {/* Theme Toggle */}
             <button
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={toggleTheme}
               aria-label="Toggle theme"
-              className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm transition-all ${
-                darkMode
-                  ? "border-[#f2e8d5]/15 hover:border-[#f2e8d5]/30"
-                  : "border-[#1c1412]/15 hover:border-[#1c1412]/30"
-              }`}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-sm transition-all hover:border-ink/30"
             >
               {darkMode ? "☼" : "☾"}
             </button>
 
-            {/* Download CV */}
+            {/* Email Me */}
             <a
-              href="https://drive.google.com/drive/folders/1bc3fcC-d85EUx7-mpNMBw5lVrxkZFkTV?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`font-space-mono hidden rounded-full px-5 py-2.5 text-sm font-medium transition-all sm:block ${
-                darkMode
-                  ? "bg-[#f2e8d5] text-[#1c1412] hover:bg-[#fff7e8]"
-                  : "bg-[#8f2d2d] text-[#f2e8d5] hover:bg-[#752323]"
-              }`}
+              href={`mailto:${EMAIL}`}
+              onClick={copyEmail}
+              className="font-space-mono hidden min-w-[8.5rem] rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-paper transition-all hover:bg-brand-hover text-center sm:block dark:bg-ink dark:text-paper dark:hover:bg-[#fff7e8]"
             >
-              Download CV
+              {emailCopied ? "Email Copied ✓" : "Email Me"}
             </a>
+
+            {/* Menu Button (mobile) */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-base transition-all hover:border-ink/30 md:hidden"
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div
+            id="mobile-menu"
+            className="border-t border-ink/10 bg-paper px-6 pb-6 pt-2 md:hidden"
+          >
+            {NAV_ITEMS.map((item) => {
+              const sectionId = item.toLowerCase();
+              const isActive = activeSection === sectionId;
+
+              return (
+                <a
+                  key={item}
+                  href={`#${sectionId}`}
+                  onClick={() => setMenuOpen(false)}
+                  className={`block border-b border-ink/10 py-4 font-glacial text-base ${
+                    isActive ? "font-bold text-accent" : "text-ink/75"
+                  }`}
+                >
+                  {item}
+                </a>
+              );
+            })}
+
+            <a
+              href={`mailto:${EMAIL}`}
+              onClick={() => {
+                copyEmail();
+                setMenuOpen(false);
+              }}
+              className="font-space-mono mt-5 block rounded-full bg-brand px-5 py-3 text-center text-sm font-medium text-paper dark:bg-ink dark:text-paper"
+            >
+              Email Me
+            </a>
+          </div>
+        )}
       </nav>
 
       {/* Hero */}
@@ -183,20 +270,12 @@ export default function Home() {
           <div className="max-w-5xl">
 
             {/* Small intro */}
-            <p
-              className={`font-glacial mb-6 text-sm font-medium tracking-[0.18em] uppercase ${
-                darkMode ? "text-[#cfc2ad]" : "text-[#8f2d2d]"
-              }`}
-            >
-              Information Systems Graduate
+            <p className="font-glacial mb-6 text-sm font-medium tracking-[0.18em] text-brand uppercase dark:text-muted">
+              Information Systems Fresh Graduate
             </p>
 
             {/* Name */}
-            <h1
-              className={`leading-[0.9] tracking-[0.125em] ${
-                darkMode ? "text-[#f2e8d5]" : "text-[#1c1412]"
-              }`}
-            >
+            <h1 className="leading-[0.9] tracking-[0.125em]">
               <span className="font-perandory text-4xl sm:text-5xl md:text-6xl lg:text-[5.75rem]">
                 <span className="font-edwardian mr-[0.175em] text-[1.6em]">
                   N
@@ -213,7 +292,7 @@ export default function Home() {
 
               <br />
 
-              <span className="font-perandory text-4xl sm:text-5xl md:text-6xl lg:text-[5.75rem] text-[#8f2d2d]">
+              <span className="font-perandory text-4xl text-brand sm:text-5xl md:text-6xl lg:text-[5.75rem]">
                 <span className="font-edwardian mr-[0.175em] text-[1.6em]">
                   R
                 </span>
@@ -222,46 +301,24 @@ export default function Home() {
             </h1>
 
             {/* Roles */}
-            <p
-              className={`font-space-mono mt-10 text-sm sm:text-base ${
-                darkMode ? "text-[#f2e8d5]" : "text-[#1c1412]"
-              }`}
-            >
+            <p className="font-space-mono mt-10 text-sm sm:text-base">
               Data Analyst&nbsp; · &nbsp;Data Engineer&nbsp; · &nbsp;Business Intelligence
             </p>
 
             {/* Description */}
-            <p
-              className={`font-glacial mt-5 max-w-2xl text-base leading-7 sm:text-lg ${
-                darkMode
-                  ? "text-[#cfc2ad]"
-                  : "text-[#1c1412]/65"
-              }`}
-            >
-              Building data-driven solutions through analytics,
-              data engineering, and business intelligence.
+            <p className="font-glacial mt-5 max-w-3xl text-base leading-7 text-muted sm:text-lg">
+              Turning raw data into business insights through SQL, Python,
+              and Power BI dashboards.
             </p>
 
             {/* Availability */}
-            <p
-              className={`font-glacial mt-8 inline-block border-b pb-1 text-sm ${
-                darkMode
-                  ? "border-[#8f2d2d] text-[#d9a9a9]"
-                  : "border-[#8f2d2d] text-[#8f2d2d]"
-              }`}
-            >
+            <p className="font-glacial mt-8 inline-block border-b border-brand pb-1 text-sm text-accent">
               Currently open to early-career opportunities.
             </p>
           </div>
 
           {/* Scroll Indicator */}
-          <div
-            className={`font-glacial absolute bottom-8 right-0 hidden items-center gap-3 text-xs tracking-[0.18em] uppercase md:flex ${
-              darkMode
-                ? "text-[#cfc2ad]/50"
-                : "text-[#1c1412]/40"
-            }`}
-          >
+          <div className="font-glacial absolute bottom-8 right-0 hidden items-center gap-3 text-xs tracking-[0.18em] text-muted/70 uppercase md:flex">
             <span>Scroll to explore</span>
             <span className="text-lg">↓</span>
           </div>
@@ -271,31 +328,36 @@ export default function Home() {
       {/* About Section */}
       <section
         id="about"
-        className={`scroll-mt-20 relative px-6 pt-14 pb-12 lg:px-10 lg:pt-18 lg:pb-20 ${
-          darkMode
-            ? "bg-[#1c1412] text-[#f2e8d5]"
-            : "bg-[#f2e8d5] text-[#1c1412]"
-        }`}
+        className="relative scroll-mt-20 overflow-x-clip bg-paper px-6 pt-14 pb-12 text-ink lg:px-10 lg:pt-18 lg:pb-20"
       >
         <div className="portfolio-container">
-          <div className="grid items-center gap-16 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24">
+
+          {/* Photo + Statement */}
+          <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-16">
 
             {/* Left — Photo */}
-            <div className="relative mx-auto w-full max-w-lg lg:mx-0">
-              <div className="relative aspect-[4/5]">
+            <div className="relative mx-auto w-full max-w-xl lg:mx-0">
+
+              {/* Ukuran foto + lace */}
+              <div className="relative aspect-[4/5] origin-center scale-105 lg:scale-[0.97]">
 
                 {/* Lace Paper */}
-                <img
+                <Image
                   src="/images/lace-paper.png"
                   alt=""
-                  className="absolute left-1/2 top-1/2 h-[100%] w-[100%] -translate-x-1/2 -translate-y-1/2 object-contain"
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 90vw"
+                  className="object-contain"
                 />
 
                 {/* Photo */}
                 <div className="absolute left-[14%] top-[18%] w-[55%] rotate-[-3deg] overflow-hidden rounded-[5px] shadow-xl">
-                  <img
+                  <Image
                     src="/images/naifa-photo.jpeg"
-                    alt="Naifa"
+                    alt="Portrait of Naifa Mumtazah Rendiga"
+                    width={0}
+                    height={0}
+                    sizes="(min-width: 1024px) 30vw, 55vw"
                     className="h-auto w-full object-cover"
                   />
                 </div>
@@ -306,111 +368,78 @@ export default function Home() {
             <div>
 
               {/* Main Statement */}
-              <h2
-                className={`max-w-3xl leading-[1.05] tracking-[0.01em] ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                <span className="font-perandory text-4xl sm:text-5xl lg:text-[3.9rem]">
-                  Exploring Data, Systems, and What They Can Do.
+              <h2 className="max-w-3xl leading-[1.05] tracking-[0.01em]">
+                <span className="font-perandory text-4xl sm:text-5xl lg:text-[3.4rem]">
+                  {ABOUT_HEADLINE}
                 </span>
               </h2>
 
               {/* Description */}
-              <div className="mt-10 max-w-2xl">
-                <p
-                  className={`font-glacial text-base leading-7 sm:text-lg ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  I studied Information Systems and enjoy working where data, technology, 
-                  and business needs come together. I’ve explored business dashboards,
-                  data transformation, and forecasting projects, finding ways to turn raw 
-                  information into insights that people can actually use.
-                </p>
-              </div>
-
-              {/* Quick Information */}
-              <div className="mt-12 max-w-2xl">
-
-                {/* Education */}
-                <div
-                  className={`grid grid-cols-[100px_1fr] items-center gap-6 border-t py-4 ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15"
-                      : "border-[#1c1412]/15"
-                  }`}
-                >
-                  <span
-                    className={`font-space-mono text-xs uppercase tracking-[0.12em] ${
-                      darkMode
-                        ? "text-[#cfc2ad]/60"
-                        : "text-[#1c1412]/50"
-                    }`}
-                  >
-                    Education
-                  </span>
-
-                  <div>
-                    {/* Main Information */}
-                    <p
-                      className={`font-glacial text-sm sm:text-base ${
-                        darkMode
-                          ? "text-[#f2e8d5]"
-                          : "text-[#1c1412]"
-                      }`}
-                    >
-                      Information Systems, Institut Teknologi Sepuluh Nopember
-                    </p>
-
-                    {/* Secondary Information */}
-                    <p
-                      className={`mt-1.5 font-space-mono text-xs ${
-                        darkMode
-                          ? "text-[#cfc2ad]/55"
-                          : "text-[#1c1412]/45"
-                      }`}
-                    >
-                      2022 — 2026&nbsp;&nbsp;·&nbsp;&nbsp;GPA 3.59 / 4.00 (Cum Laude)
-                    </p>
-                  </div>
-                </div>
-
-                {/* Language */}
-                <div
-                  className={`grid grid-cols-[100px_1fr] items-center gap-6 border-t py-4 ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15"
-                      : "border-[#1c1412]/15"
-                  }`}
-                >
-                  <span
-                    className={`font-space-mono text-xs uppercase tracking-[0.12em] ${
-                      darkMode
-                        ? "text-[#cfc2ad]/60"
-                        : "text-[#1c1412]/50"
-                    }`}
-                  >
-                    Language
-                  </span>
-
-                  <span
-                    className={`font-glacial text-sm sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Indonesian, English
-                  </span>
-                </div>
-
-              </div>
+              <p className="font-glacial mt-8 max-w-2xl text-base leading-7 text-muted sm:text-lg">
+                <Rich text={ABOUT_DESCRIPTION} />
+              </p>
             </div>
+          </div>
+
+          {/* Quick Information (full width) */}
+          <div className="mt-16 border-b border-ink/15 lg:mt-5">
+            {ABOUT_INFO.map((row) => (
+              <div
+                key={row.label}
+                className="grid grid-cols-[100px_1fr] items-baseline gap-6 border-t border-ink/15 py-4 sm:grid-cols-[160px_1fr]"
+              >
+                <span className="font-space-mono text-sm uppercase tracking-[0.12em] text-ink/50">
+                  {row.label}
+                </span>
+
+                <div>
+                  {/* Main Information */}
+                  <p className="font-glacial text-base sm:text-lg">
+                    {row.title}
+                    {row.titleMeta && (
+                      <span className="font-space-mono text-sm text-ink/45">
+                        <span className="mx-2.5">•</span>
+                        {row.titleMeta}
+                      </span>
+                    )}
+                  </p>
+
+                  {/* Detail */}
+                  {row.detail && (
+                    <p className="font-glacial mt-1 text-base text-muted sm:text-lg">
+                      <Rich text={row.detail} />
+                      {row.detailMeta && (
+                        <span className="font-space-mono text-sm text-ink/45">
+                          <span className="mx-2.5">•</span>
+                          {row.detailMeta}
+                        </span>
+                      )}
+                    </p>
+                  )}
+
+                  {/* Note */}
+                  {row.note && (
+                    <p className="font-glacial mt-2 text-base italic text-muted">
+                      <Rich text={row.note} />
+                    </p>
+                  )}
+
+                  {/* Tags */}
+                  {row.tags && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {row.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-ink/15 px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] text-muted"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -418,252 +447,72 @@ export default function Home() {
       {/* Experience Section */}
       <section
         id="experience"
-        className={`relative px-6 py-20 lg:px-10 lg:py-28 ${
-          darkMode
-            ? "bg-[#1c1412] text-[#f2e8d5]"
-            : "bg-[#f2e8d5] text-[#1c1412]"
-        }`}
+        className="relative scroll-mt-20 bg-paper px-6 py-20 text-ink lg:px-10 lg:py-28"
       >
         <div className="portfolio-container">
 
           {/* Section Introduction */}
-          <div className="grid gap-10 border-b-2 pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-24">
+          <div className="grid gap-10 border-b-2 border-ink pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-24">
             <div>
-              <h2
-                className={`max-w-2xl font-perandory text-5xl leading-[0.95] tracking-[0.01em] sm:text-6xl lg:text-[3.9rem] ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Learning through real work and practical experience.
+              <h2 className="max-w-2xl font-perandory text-5xl leading-[0.95] tracking-[0.01em] sm:text-6xl lg:text-[3.9rem]">
+                {EXPERIENCE_HEADLINE}
               </h2>
             </div>
 
             <div className="flex items-end">
-              <p
-                className={`max-w-md font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                From professional experience to academic roles, I’ve learned 
-                to approach new challenges with curiosity and a practical mindset.
+              <p className="max-w-md font-glacial text-base leading-7 text-muted sm:text-lg">
+                {EXPERIENCE_INTRO}
               </p>
             </div>
           </div>
 
           {/* Experience List */}
           <div>
-
-            {/* Experience 01 — Pelindo */}
-            <article
-              className={`grid gap-8 border-b py-12 lg:grid-cols-[1fr_180px] lg:gap-16 ${
-                darkMode
-                  ? "border-[#f2e8d5]/15"
-                  : "border-[#1c1412]/15"
-              }`}
-            >
-              <div>
-                <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <h3
-                    className={`font-glacial text-2xl font-bold sm:text-3xl ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    PT Pelindo Energi Logistik
+            {EXPERIENCES.map((exp) => (
+              <article
+                key={exp.organization}
+                className="border-b border-ink/15 py-12"
+              >
+                {/* Title + Date (di HP, tanggal tampil di atas) */}
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
+                  <h3 className="font-glacial text-2xl font-bold sm:text-3xl">
+                    {exp.organization}
                   </h3>
+
+                  <p className="shrink-0 font-space-mono text-sm tracking-[0.08em] text-ink/50">
+                    {exp.date}
+                  </p>
                 </div>
 
-                <p
-                  className={`mt-3 font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  IT PROJECT SUPPORT INTERN
+                <p className="mt-3 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                  {exp.role}
                 </p>
 
                 {/* Highlights */}
                 <div className="mt-7 space-y-4">
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Developed a Power BI dashboard to monitor customer invoices,
-                    covering payment status, receivables aging, top customers, 
-                    and revenue by business segment, with DAX measures and
-                    interactive filters.
-                  </p>
-
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Built a WhatsApp help-desk chatbot using Python and Node.js,
-                    integrating internal ticketing APIs to create, check, forward, and
-                    close tickets, as well as handle password resets.
-                  </p>
-
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Added session locking and a lightweight queue to prevent duplicate
-                    requests and conflicts from concurrent messages, improving the
-                    reliability of chatbot interactions.
-                  </p>
-
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Standardized API error handling and user messages to prevent
-                    repeated prompts and unexpected failures across chatbot flows.
-                  </p>
+                  {exp.highlights.map((text) => (
+                    <p
+                      key={text}
+                      className="relative pl-4 font-glacial text-base leading-7 before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full before:bg-accent"
+                    >
+                      <Rich text={text} />
+                    </p>
+                  ))}
                 </div>
 
                 {/* Tags */}
                 <div className="mt-8 flex flex-wrap gap-2">
-                  {[
-                    "Power BI",
-                    "DAX",
-                    "Python",
-                    "Node.js",
-                    "REST API",
-                  ].map((tag) => (
+                  {exp.tags.map((tag) => (
                     <span
                       key={tag}
-                      className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                        darkMode
-                          ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                          : "border-[#1c1412]/15 text-[#1c1412]/60"
-                      }`}
+                      className="rounded-full border border-ink/15 px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] text-muted"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-              </div>
-
-              {/* Date */}
-              <div className="lg:text-right">
-                <p
-                  className={`font-space-mono text-xs tracking-[0.08em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/60"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Aug — Dec 2025
-                </p>
-              </div>
-            </article>
-
-            {/* Experience 02 — Teaching Assistant */}
-            <article
-              className={`grid gap-8 border-b py-12 lg:grid-cols-[1fr_180px] lg:gap-16 ${
-                darkMode
-                  ? "border-[#f2e8d5]/15"
-                  : "border-[#1c1412]/15"
-              }`}
-            >
-              <div>
-                <h3
-                  className={`font-glacial text-2xl font-bold sm:text-3xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Information Systems Department, ITS
-                </h3>
-
-                <p
-                  className={`mt-3 font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  TEACHING ASSISTANT · BUSINESS PERFORMANCE DASHBOARD PRACTICUM
-                </p>
-
-                {/* Highlights */}
-                <div className="mt-7 space-y-4">
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Mentored 6 student groups with 60+ students in preparing operational
-                    data and building interactive Power BI performance dashboards.
-                  </p>
-
-                  <p
-                    className={`relative pl-4 font-glacial text-sm leading-6 sm:text-base before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-full ${
-                      darkMode
-                        ? "text-[#f2e8d5] before:bg-[#d9a9a9]"
-                        : "text-[#1c1412] before:bg-[#8f2d2d]"
-                    }`}
-                  >
-                    Guided students in defining business metrics and structuring data
-                    models, while reviewing dashboard layouts to improve accuracy and
-                    readability.
-                  </p>
-                </div>
-
-                {/* Tags */}
-                <div className="mt-8 flex flex-wrap gap-2">
-                  {["Power BI", "Data Visualization", "Business Intelligence"].map(
-                    (tag) => (
-                      <span
-                        key={tag}
-                        className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                          darkMode
-                            ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                            : "border-[#1c1412]/15 text-[#1c1412]/60"
-                        }`}
-                      >
-                        {tag}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Date */}
-              <div className="lg:text-right">
-                <p
-                  className={`font-space-mono text-xs tracking-[0.08em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/60"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Nov — Dec 2025
-                </p>
-              </div>
-            </article>
-
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -671,1263 +520,294 @@ export default function Home() {
       {/* Projects Section */}
       <section
         id="projects"
-        className={`relative px-6 py-20 lg:px-10 lg:py-28 ${
-          darkMode
-            ? "bg-[#1c1412] text-[#f2e8d5]"
-            : "bg-[#f2e8d5] text-[#1c1412]"
-        }`}
+        className="relative scroll-mt-20 bg-paper px-6 py-20 text-ink lg:px-10 lg:py-28"
       >
         <div className="portfolio-container">
 
           {/* Section Introduction */}
-          <div className="grid gap-10 border-b-2 pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+          <div className="grid gap-10 border-b-2 border-ink pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
             <div>
-              <h2
-                className={`max-w-2xl font-perandory text-4xl leading-[0.95] tracking-[0.01em] sm:text-5xl lg:text-[4rem] ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Building with data, solving problems, and learning along the way.
+              <h2 className="max-w-2xl font-perandory text-4xl leading-[0.95] tracking-[0.01em] sm:text-5xl lg:text-[4rem]">
+                {PROJECTS_HEADLINE}
               </h2>
             </div>
 
             <div className="flex items-end">
-              <p
-                className={`max-w-md font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                A selection of projects across data analytics, data engineering,
-                and forecasting — built through coursework, experimentation,
-                and hands-on problem solving.
+              <p className="max-w-md font-glacial text-base leading-7 text-muted sm:text-lg">
+                {PROJECTS_INTRO}
               </p>
             </div>
           </div>
 
-          {/* Project 01 — Sales Analytics Dashboard */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Visual */}
-            <div>
-              <div
-                className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                    : "border-[#1c1412]/10 bg-[#eadfca]"
-                }`}
-              >
-                <img
-                  src="/projects/sales-dashboard.png"
-                  alt="Sales Analytics Dashboard"
-                  className="h-full w-full rounded-xl object-contain"
-                />
+          {/* Project List */}
+          {PROJECTS.map((project, index) => (
+            <article
+              key={project.title}
+              className={`grid gap-10 border-b border-ink/15 py-16 lg:items-center lg:gap-10 ${
+                index % 2 === 1
+                  ? "lg:grid-cols-[1.06fr_0.94fr]"
+                  : "lg:grid-cols-[0.94fr_1.06fr]"
+              }`}
+            >
+              {/* Visual */}
+              <div className={index % 2 === 1 ? "lg:order-last" : ""}>
+                {project.images.length === 1 ? (
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-ink/10 bg-ink/5">
+                    <div className="absolute inset-4">
+                      <Image
+                        src={project.images[0].src}
+                        alt={project.images[0].alt}
+                        fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        className="rounded-xl object-contain"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex aspect-[4/3] flex-col justify-center gap-4 overflow-hidden rounded-2xl border border-ink/10 bg-ink/5 p-5">
+                    {project.images.map((image) => (
+                      <div key={image.src} className="overflow-hidden rounded-lg">
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          width={0}
+                          height={0}
+                          sizes="(min-width: 1024px) 50vw, 100vw"
+                          className="h-auto w-full object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {project.link && (
+                  <a
+                    href={project.link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group mt-4 inline-flex items-center gap-3 border-b border-accent pb-1 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent hover:text-brand-hover dark:hover:text-ink"
+                  >
+                    {project.link.label}
+                    <span className="text-base transition-transform duration-200 group-hover:translate-x-1">
+                      ↗
+                    </span>
+                  </a>
+                )}
               </div>
 
-              <a
-                href="https://app.powerbi.com/view?r=eyJrIjoiYjUxNzJkZDAtOGJkNi00MDQxLWI3ZGMtZjY4ZDBiYmJlNjZlIiwidCI6IjFkNTE2OWFjLWM3Y2ItNDI3NS05NzY0LWJmOGM5YzM2NGE0YyIsImMiOjEwfQ%3D%3D"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group mt-4 inline-flex items-center gap-3 border-b pb-1 font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                  darkMode
-                    ? "border-[#d9a9a9] text-[#d9a9a9] hover:text-[#f2e8d5]"
-                    : "border-[#8f2d2d] text-[#8f2d2d] hover:text-[#752323]"
-                }`}
-              >
-                View Dashboard
-                <span className="text-base transition-transform duration-200 group-hover:translate-x-1">
-                  ↗
-                </span>
-              </a>
-            </div>
+              {/* Content */}
+              <div>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <p className="font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                    {String(index + 1).padStart(2, "0")} / {project.category}
+                  </p>
 
-            {/* Content */}
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  01 / BUSINESS INTELLIGENCE
+                  <span className="rounded-full border border-ink/15 px-3 py-1 font-space-mono text-sm tracking-[0.04em] text-muted">
+                    {project.type}
+                    <span className="mx-2">•</span>
+                    {project.year}
+                  </span>
+                </div>
+
+                <h3 className="mt-3 font-glacial text-3xl font-bold leading-tight sm:text-4xl">
+                  {project.title}
+                </h3>
+
+                <p className="mt-4 font-glacial text-base leading-7 text-muted sm:text-lg">
+                  {project.description}
                 </p>
 
-                <span
-                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Self-Initiated Project
-                </span>
-              </div>
+                <div className="mt-8 space-y-6">
+                  <div>
+                    <p className="mb-1.5 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                      What I Explored
+                    </p>
+                    <p className="font-glacial text-base leading-7">
+                      <Rich text={project.explored} />
+                    </p>
+                  </div>
 
-              <h3
-                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Sales Analytics Dashboard
-              </h3>
-
-              <p
-                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                An interactive sales analytics dashboard built to explore revenue, 
-                product performance, and customer purchasing behavior across sales 
-                channels, store locations, and product categories from 2021–2025.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    What I Explored
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Designed a 10-table PostgreSQL database for retail sales with 
-                    13k+ customers and 100k+ synthetic orders, then used Power BI 
-                    to analyze sales performance and customer behavior.
-                  </p>
+                  <div>
+                    <p className="mb-1.5 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                      Key Work
+                    </p>
+                    <p className="font-glacial text-base leading-7">
+                      <Rich text={project.keyWork} />
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    Key Work
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Built SQL validation and rebuild logic, developed DAX measures 
-                    for profit margin and customer segmentation, and created custom 
-                    SVG/HTML visuals with dynamic CSS tooltips.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {["PostgreSQL", "Power BI", "DAX", "SVG / HTML"].map(
-                  (tag) => (
+                {/* Tags */}
+                <div className="mt-8 flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                        darkMode
-                          ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                          : "border-[#1c1412]/15 text-[#1c1412]/60"
-                      }`}
+                      className="rounded-full border border-ink/15 px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] text-muted"
                     >
                       {tag}
                     </span>
-                  )
-                )}
-              </div>
-            </div>
-          </article>
-
-          {/* Project 02 — Traffic Load Forecasting */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Content */}
-            <div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  02 / FORECASTING
-                </p>
-
-                <span
-                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Undergraduate Thesis
-                </span>
-              </div>
-
-              <h3
-                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Traffic Load Forecasting on Weighbridge with Hybrid TCN-BiLSTM
-              </h3>
-
-              <p
-                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                Forecasting daily truck volume from weighbridge data to support
-                `maintenance scheduling and identify predicted low-traffic periods.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    What I Explored
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Forecasted daily truck volume from 731 observations across 2024–2025
-                    using TCN, BiLSTM, and a hybrid TCN-BiLSTM model with first-order
-                    differencing.
-                  </p>
-                </div>
-
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    Key Work
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Compared forecasting performance across models, analyzed the impact
-                    of volatility and missing external factors on prediction error, and
-                    built a Streamlit app to display forecasts and recommend maintenance
-                    dates.
-                  </p>
+                  ))}
                 </div>
               </div>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {["Python", "TensorFlow/Keras", "Streamlit"].map((tag) => (
-                  <span
-                    key={tag}
-                    className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                      darkMode
-                        ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                        : "border-[#1c1412]/15 text-[#1c1412]/60"
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Visual */}
-            <div>
-              <div
-                className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                    : "border-[#1c1412]/10 bg-[#eadfca]"
-                }`}
-              >
-                <img
-                  src="/projects/undergraduate-thesis.png"
-                  alt="Traffic Load Forecasting on Weighbridge with Hybrid TCN-BiLSTM"
-                  className="h-full w-full rounded-xl object-contain"
-                />
-              </div>
-            </div>
-          </article>
-
-          {/* Project 03 — Data Integration & Warehousing */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Visual */}
-            <div
-              className={`flex aspect-[4/3] flex-col justify-center gap-4 overflow-hidden rounded-2xl border p-5 ${
-                darkMode
-                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                  : "border-[#1c1412]/10 bg-[#eadfca]"
-              }`}
-            >
-              <div className="overflow-hidden rounded-lg">
-                <img
-                  src="/projects/pdi-workflow-1.png"
-                  alt="Pentaho Data Integration ETL workflow"
-                  className="w-full object-contain"
-                />
-              </div>
-
-              <div className="overflow-hidden rounded-lg">
-                <img
-                  src="/projects/pdi-workflow-2.png"
-                  alt="Pentaho Data Integration ETL workflow"
-                  className="w-full object-contain"
-                />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  03 / DATA ENGINEERING
-                </p>
-
-                <span
-                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Academic Project
-                </span>
-              </div>
-
-              <h3
-                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Data Integration & Warehousing for Student Admission Selection
-              </h3>
-
-              <p
-                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                A data integration and warehousing project focused on transforming
-                multiple MySQL source tables into a structured analytical data warehouse.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    What I Explored
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Built 6 Pentaho ETL transformations orchestrated by one job to load
-                    a provided star schema with 3 fact tables and 5 dimension tables from
-                    16 MySQL source tables.
-                  </p>
-                </div>
-
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    Key Work
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Implemented surrogate keys, Insert/Update logic, lookups, and
-                    JavaScript parsing, including a 40+ attribute applicant dimension,
-                    then validated the output against an instructor-provided reference database.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {["Pentaho Data Integration", "MySQL", "ETL / ELT", "Data Warehousing"].map((tag) => (
-                  <span
-                    key={tag}
-                    className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                      darkMode
-                        ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                        : "border-[#1c1412]/15 text-[#1c1412]/60"
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </article>
-
-          {/* Project 04 — IT Performance & KPI Dashboard */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Content */}
-            <div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  04 / DASHBOARD
-                </p>
-
-                <span
-                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Academic Project
-                </span>
-              </div>
-
-              <h3
-                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                IT Performance & KPI Dashboard
-              </h3>
-
-              <p
-                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                An interactive Power BI dashboard designed to visualize IT performance
-                through defined KPIs, targets, and the four perspectives of the IT
-                Balanced Scorecard.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    What I Explored
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Designed IT performance metrics and targets across the four IT Balanced
-                    Scorecard perspectives using simulated operational data.
-                  </p>
-                </div>
-
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    Key Work
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Built an interactive Power BI dashboard with KPI visualizations and
-                    performance indicators to support monitoring of IT performance and
-                    highlight gaps against defined targets.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {["Power BI", "DAX", "IT Balanced Scorecard", "KPI Design"].map((tag) => (
-                  <span
-                    key={tag}
-                    className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                      darkMode
-                        ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                        : "border-[#1c1412]/15 text-[#1c1412]/60"
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Visual */}
-            <div
-              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border ${
-                darkMode
-                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                  : "border-[#1c1412]/10 bg-[#eadfca]"
-              }`}
-            >
-              <img
-                src="/projects/kpi-dashboard.png"
-                alt="IT Performance and KPI Dashboard"
-                className="h-full w-full object-contain p-4"
-              />
-            </div>
-          </article>
-
-          {/* Project 05 — Route Optimization */}
-          <article
-            className={`grid gap-10 border-b py-16 lg:grid-cols-2 lg:items-center lg:gap-20 ${
-              darkMode
-                ? "border-[#f2e8d5]/15"
-                : "border-[#1c1412]/15"
-            }`}
-          >
-            {/* Visual */}
-            <div
-              className={`flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border p-4 ${
-                darkMode
-                  ? "border-[#f2e8d5]/10 bg-[#241a18]"
-                  : "border-[#1c1412]/10 bg-[#eadfca]"
-              }`}
-            >
-              <img
-                src="/projects/route-optimization.png"
-                alt="Route Optimization for Health Inspectors in Jakarta"
-                className="h-full w-full rounded-xl object-contain"
-              />
-            </div>
-
-            {/* Content */}
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  05 / OPTIMIZATION
-                </p>
-
-                <span
-                  className={`rounded-full border px-3 py-1 font-space-mono text-[10px] tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Academic Project
-                </span>
-              </div>
-
-              <h3
-                className={`mt-2 font-glacial text-3xl font-bold leading-tight sm:text-4xl ${
-                  darkMode
-                    ? "text-[#f2e8d5]"
-                    : "text-[#1c1412]"
-                }`}
-              >
-                Multi-Location Route Optimization for Health Inspectors
-              </h3>
-
-              <p
-                className={`mt-4 font-glacial text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                A route optimization project for planning health inspection visits across
-                multiple hospitals in Jakarta while accounting for time-window constraints.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    What I Explored
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Modeled a Vehicle Routing Problem with Time Windows (VRPTW) for 60
-                    hospitals in Jakarta, grouping them into 6 balanced clusters of 10
-                    using constrained K-Means.
-                  </p>
-                </div>
-
-                <div>
-                  <p
-                    className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                      darkMode
-                        ? "text-[#d9a9a9]"
-                        : "text-[#8f2d2d]"
-                    }`}
-                  >
-                    Key Work
-                  </p>
-
-                  <p
-                    className={`font-glacial text-sm leading-6 sm:text-base ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    Implemented Particle Swarm Optimization (PSO) for each cluster and
-                    compared it with three other algorithms as part of the team, with PSO
-                    producing the lowest total cost and distance of 215 km.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {["Python", "PSO", "VRPTW"].map(
-                  (tag) => (
-                    <span
-                      key={tag}
-                      className={`rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                        darkMode
-                          ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                          : "border-[#1c1412]/15 text-[#1c1412]/60"
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-          </article>
+            </article>
+          ))}
 
         </div>
       </section>
 
-      {/* Journey Section */}
+      {/* Certifications Section */}
       <section
-        id="journey"
-        className={`relative px-6 py-20 lg:px-10 lg:py-28 ${
-          darkMode
-            ? "bg-[#1c1412] text-[#f2e8d5]"
-            : "bg-[#f2e8d5] text-[#1c1412]"
-        }`}
+        id="certifications"
+        className="relative scroll-mt-20 bg-paper px-6 py-20 text-ink lg:px-10 lg:py-28"
+      >
+        <div className="portfolio-container">
+
+          {/* Section Introduction */}
+          <div className="grid gap-10 border-b-2 border-ink pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+            <div>
+              <h2 className="max-w-2xl font-perandory text-4xl leading-[0.95] tracking-[0.01em] sm:text-5xl lg:text-[4rem]">
+                {CERTIFICATIONS_HEADLINE}
+              </h2>
+            </div>
+
+            <div className="flex items-end">
+              <p className="max-w-md font-glacial text-base leading-7 text-muted sm:text-lg">
+                {CERTIFICATIONS_INTRO}
+              </p>
+            </div>
+          </div>
+
+          {/* Course List (isi ada di content.ts) */}
+          <div>
+            {CERTIFICATIONS.map((cert) => (
+              <article
+                key={cert.title}
+                className="border-b border-ink/15 py-12"
+              >
+                {/* Title + Date (di HP, tanggal tampil di atas) */}
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
+                  <h3 className="font-glacial text-2xl font-bold leading-tight sm:text-3xl">
+                    {cert.title}
+                  </h3>
+
+                  <p className="shrink-0 font-space-mono text-sm tracking-[0.08em] text-ink/50">
+                    {cert.date}
+                  </p>
+                </div>
+
+                <p className="mt-3 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                  {cert.issuer}
+                </p>
+
+                <p className="mt-5 font-glacial text-base leading-7 text-muted sm:text-lg">
+                  {cert.description}
+                </p>
+
+                <p className="mb-3 mt-7 font-space-mono text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                  Key Competencies
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {cert.competencies.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-ink/15 px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] text-muted"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex border-b border-accent pb-1 font-space-mono text-sm font-bold uppercase tracking-[0.04em] text-accent transition-colors hover:text-brand-hover dark:hover:text-ink"
+          >
+            {CERTIFICATIONS_LINK_LABEL} ↗
+          </a>
+        </div>
+      </section>
+
+      {/* Leadership Section */}
+      <section
+        id="leadership"
+        className="relative scroll-mt-20 bg-paper px-6 py-20 text-ink lg:px-10 lg:py-28"
       >
         <div className="portfolio-container">
 
           {/* Section Header */}
-          <div className="flex flex-col gap-6 border-b pb-10 lg:flex-row lg:items-end lg:justify-between">
-            <h2
-              className={`font-perandory max-w-3xl text-4xl leading-[0.95] tracking-[0.01em] sm:text-5xl lg:text-[4rem] ${
-                darkMode ? "text-[#f2e8d5]" : "text-[#1c1412]"
-              }`}
-            >
-              Beyond the classroom, every experience became part of the journey.
+          <div className="flex flex-col gap-6 border-b-2 border-ink pb-10 lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="font-perandory max-w-3xl text-4xl leading-[0.95] tracking-[0.01em] sm:text-5xl lg:text-[4rem]">
+              {JOURNEY_HEADLINE}
             </h2>
 
-            <p
-              className={`font-glacial max-w-md text-sm leading-6 sm:text-base ${
-                darkMode
-                  ? "text-[#cfc2ad]"
-                  : "text-[#1c1412]/65"
-              }`}
-            >
-              From student organizations to event teams, these experiences
-              shaped how I collaborate, communicate, and take responsibility.
+            <p className="font-glacial max-w-md text-base leading-7 text-muted sm:text-lg">
+              {JOURNEY_INTRO}
             </p>
           </div>
 
           {/* Journey Items */}
-          <div className="grid gap-14 pt-12 md:grid-cols-2 md:gap-16">
+          <div className="grid gap-14 pt-12 md:grid-cols-2 md:gap-x-12 md:gap-y-16">
+            {JOURNEY.map((item) => (
+              <article key={item.organization} className="w-full">
 
-            {/* Journey 01 */}
-            <article className="mx-auto w-full max-w-[360px]">
-              <div
-                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <img
-                  src="/journey/hmsi.jpeg"
-                  alt="Himpunan Mahasiswa Sistem Informasi"
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
-                />
-              </div>
+                {/* Photo */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-ink/10">
+                  <Image
+                    src={item.image.src}
+                    alt={item.image.alt}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 hover:scale-[1.03]"
+                  />
+                </div>
 
-              <div className="mt-6">
-                <h3
-                  className={`font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em] ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Himpunan Mahasiswa Sistem Informasi
-                </h3>
+                <div className="mt-6">
+                  <h3 className="font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em]">
+                    {item.organization}
+                  </h3>
 
-                <p
-                  className={`font-space-mono mt-3 text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Secretary of Social Development
-                </p>
+                  <p className="font-space-mono mt-3 text-sm font-bold uppercase tracking-[0.06em] text-accent">
+                    {item.role}
+                  </p>
 
-                <p
-                  className={`font-glacial mt-4 text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Managed division administration and ran TABMAS fundraising drives
-                  supporting Information Systems community members facing hardship,
-                  while serving as Treasurer for the SINERGI event and overseeing its
-                  budget and financial planning.
-                </p>
+                  {/* Date + Focus */}
+                  <p className="font-space-mono mt-2 text-sm text-ink/45">
+                    {item.date}
+                    <span className="mx-2.5">•</span>
+                    {item.focus}
+                  </p>
 
-                <span
-                  className={`mt-5 inline-flex rounded-full border px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15 text-[#cfc2ad]"
-                      : "border-[#1c1412]/15 text-[#1c1412]/60"
-                  }`}
-                >
-                  Best Staff
-                </span>
-              </div>
-            </article>
+                  <p className="font-glacial mt-4 text-base leading-7 text-muted">
+                    <Rich text={item.description} />
+                  </p>
 
-            {/* Journey 02 */}
-            <article className="mx-auto w-full max-w-[360px]">
-              <div
-                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <img
-                  src="/journey/ise.jpeg"
-                  alt="Information Systems Expo 2024"
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
-                />
-              </div>
-
-              <div className="mt-6">
-                <h3
-                  className={`font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em] ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Information Systems Expo (ISE!) 2024
-                </h3>
-
-                <p
-                  className={`font-space-mono mt-3 text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Head of Consumption
-                </p>
-
-                <p
-                  className={`font-glacial mt-4 text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Led a team of 8 in planning, vendor negotiation, and procurement
-                  of meals for 300+ attendees and staff across multiple events,
-                  delivering on time and within budget.
-                </p>
-              </div>
-            </article>
-
-            {/* Journey 03 */}
-            <article className="mx-auto w-full max-w-[360px]">
-              <div
-                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <img
-                  src="/journey/ilits.jpeg"
-                  alt="Ini Lho ITS! 2024"
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
-                />
-              </div>
-
-              <div className="mt-6">
-                <h3
-                  className={`font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em] ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Ini Lho ITS! 2024
-                </h3>
-
-                <p
-                  className={`font-space-mono mt-3 text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Secretary &amp; Treasurer of Consumption
-                </p>
-
-                <p
-                  className={`font-glacial mt-4 text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Managed a consumption budget of IDR 50 million+ for 1,000+ attendees
-                  and staff, tracking finances in Google Sheets and keeping spending
-                  within budget.
-                </p>
-              </div>
-            </article>
-
-            {/* Journey 04 */}
-            <article className="mx-auto w-full max-w-[360px]">
-              <div
-                className={`aspect-[16/10] w-full overflow-hidden rounded-2xl border ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <img
-                  src="/journey/gerigi.jpeg"
-                  alt="GERIGI ITS 2023"
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
-                />
-              </div>
-
-              <div className="mt-6">
-                <h3
-                  className={`font-glacial text-3xl font-bold leading-[1.1] tracking-[-0.02em] ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  GERIGI ITS 2023
-                </h3>
-
-                <p
-                  className={`font-space-mono mt-3 text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Treasurer of Consumption
-                </p>
-
-                <p
-                  className={`font-glacial mt-4 text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Managed an IDR 130 million+ meal budget, vendor negotiations,
-                  and expense tracking for a 3-day orientation serving 6,500+
-                  freshmen and committee members.
-                </p>
-              </div>
-            </article>
-
+                  {item.badge && (
+                    <span className="mt-5 inline-flex rounded-full border border-ink/15 px-3 py-1.5 font-space-mono text-xs tracking-[0.04em] text-muted">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
-
-          {/* Learning & Credentials */}
-          <div className="mt-20 border-t pt-12">
-            <div className="mb-10">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <h3
-                  className={`font-glacial max-w-3xl text-3xl font-bold leading-[1.1] tracking-[-0.02em] sm:text-4xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Learning &amp; Credentials
-                </h3>
-              </div>
-            </div>
-
-            <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
-
-              {/* Credential 01 */}
-              <div
-                className={`border-b py-8 md:border-r md:pr-8 ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  MySkill
-                </p>
-
-                <h4
-                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Data Analysis
-                </h4>
-
-                <p
-                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/65"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Issued Sep 2026
-                </p>
-
-                <p
-                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Covered statistical analysis, business and product metrics, cohort 
-                  and retention analysis, regression, hypothesis testing, clustering, 
-                  and data visualization.
-                </p>
-              </div>
-
-              {/* Credential 02 */}
-              <div
-                className={`border-b py-8 md:pl-8 ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Cisco Networking Academy
-                </p>
-
-                <h4
-                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  DevNet Associate
-                </h4>
-
-                <p
-                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/65"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Issued Sep 2025
-                </p>
-
-                <p
-                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Built familiarity with Python, Git, APIs, networking, infrastructure 
-                  automation, application deployment and security, and Cisco platforms 
-                  through hands-on learning.
-                </p>
-              </div>
-
-              {/* Credential 03 */}
-              <div
-                className={`py-8 md:border-r md:pr-8 ${
-                  darkMode
-                    ? "border-[#f2e8d5]/10"
-                    : "border-[#1c1412]/10"
-                }`}
-              >
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Google Cloud Skills Boost
-                </p>
-
-                <h4
-                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Boost Productivity with Gemini in BigQuery
-                </h4>
-
-                <p
-                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/65"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Issued Mar 2025
-                </p>
-
-                <p
-                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Focused on Gemini in BigQuery for data exploration and preparation, 
-                  code generation and troubleshooting, workflow discovery, and visualization 
-                  through interactive labs.
-                </p>
-              </div>
-
-              {/* Credential 04 */}
-              <div className="py-8 md:pl-8">
-                <p
-                  className={`font-space-mono text-xs font-bold uppercase tracking-[0.06em] ${
-                    darkMode
-                      ? "text-[#d9a9a9]"
-                      : "text-[#8f2d2d]"
-                  }`}
-                >
-                  Google Cloud Skills Boost
-                </p>
-
-                <h4
-                  className={`mt-2 font-glacial text-2xl font-bold leading-tight sm:text-3xl ${
-                    darkMode
-                      ? "text-[#f2e8d5]"
-                      : "text-[#1c1412]"
-                  }`}
-                >
-                  Secure BigLake Data
-                </h4>
-
-                <p
-                  className={`mt-2 font-space-mono text-xs uppercase tracking-[0.04em] ${
-                    darkMode
-                      ? "text-[#cfc2ad]/65"
-                      : "text-[#1c1412]/50"
-                  }`}
-                >
-                  Issued Feb 2025
-                </p>
-
-                <p
-                  className={`mt-5 font-glacial text-sm leading-6 sm:text-base ${
-                    darkMode
-                      ? "text-[#cfc2ad]"
-                      : "text-[#1c1412]/65"
-                  }`}
-                >
-                  Practiced securing lakehouse data using IAM, BigQuery, Lakehouse,
-                  and Data Catalog, including creating and securing lakehouse tables.
-                </p>
-              </div>
-
-            </div>
-
-            {/* More Credentials */}
-            <a
-              href="LINKEDIN_URL_KAMU"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-8 inline-flex border-b pb-1 font-space-mono text-xs font-bold uppercase tracking-[0.04em] transition-colors ${
-                darkMode
-                  ? "border-[#d9a9a9] text-[#d9a9a9] hover:text-[#f2e8d5]"
-                  : "border-[#8f2d2d] text-[#8f2d2d] hover:text-[#752323]"
-              }`}
-            >
-              More credentials on LinkedIn ↗
-            </a>
-          </div>
-          
         </div>
       </section>
 
       {/* Contact */}
       <section
         id="contact"
-        className={`relative px-6 py-12 lg:px-10 lg:py-20 ${
-          darkMode
-            ? "bg-[#1c1412] text-[#f2e8d5]"
-            : "bg-[#f2e8d5] text-[#1c1412]"
-        }`}
+        className="relative scroll-mt-20 bg-paper px-6 py-12 text-ink lg:px-10 lg:py-20"
       >
         <div className="portfolio-container">
 
           {/* Contact Heading */}
           <div className="flex justify-end">
-            <h2
-              className={`text-right leading-[0.9] tracking-[0.125em] ${
-                darkMode ? "text-[#f2e8d5]" : "text-[#1c1412]"
-              }`}
-            >
+            <h2 className="text-right leading-[0.9] tracking-[0.125em]">
               <span className="font-perandory text-4xl sm:text-5xl md:text-6xl lg:text-[5.75rem]">
                 <span className="font-edwardian mr-[0.175em] text-[1.6em]">
                   L
@@ -1935,7 +815,7 @@ export default function Home() {
                 et&apos;s
               </span>{" "}
 
-              <span className="font-perandory text-4xl text-[#8f2d2d] sm:text-5xl md:text-6xl lg:text-[5.75rem]">
+              <span className="font-perandory text-4xl text-brand sm:text-5xl md:text-6xl lg:text-[5.75rem]">
                 <span className="font-edwardian mr-[0.175em] text-[1.6em]">
                   C
                 </span>
@@ -1950,137 +830,85 @@ export default function Home() {
             {/* Letter Image */}
             <div className="flex items-start justify-center lg:-mt-45 lg:justify-start">
               <div className="w-full max-w-md">
-                <img
+                <Image
                   src="/contact/letter.png"
                   alt="A letter inviting you to connect"
+                  width={0}
+                  height={0}
+                  sizes="(min-width: 1024px) 40vw, 90vw"
                   className="h-auto w-full object-contain"
                 />
               </div>
             </div>
 
             {/* Contact Information */}
-            <div className="pt-0">
+            <div>
 
               {/* Currently Open */}
-              <p
-                className={`font-glacial max-w-xl text-base leading-7 sm:text-lg ${
-                  darkMode
-                    ? "text-[#cfc2ad]"
-                    : "text-[#1c1412]/65"
-                }`}
-              >
-                Currently open to early-career opportunities where I can
-                contribute through data analytics, data engineering, and
-                business intelligence, while continuing to learn and grow
-                through meaningful work.
+              <p className="font-glacial text-base leading-7 text-muted sm:text-lg">
+                {CONTACT_INTRO}
               </p>
 
               {/* Contact Links */}
-              <div className="mt-7 max-w-xl">
+              <div className="mt-7">
 
-                {/* Email */}
+                {/* Email (membuka aplikasi email dan menyalin alamat) */}
                 <a
-                  href="mailto:nevamuren@gmail.com"
-                  className={`group flex items-center justify-between border-t py-4 transition-colors ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15"
-                      : "border-[#1c1412]/15"
-                  }`}
+                  href={`mailto:${EMAIL}`}
+                  onClick={copyEmail}
+                  className="group flex items-center justify-between border-t border-ink/15 py-4"
                 >
                   <div>
-                    <p
-                      className={`font-space-mono text-xs uppercase tracking-[0.08em] ${
-                        darkMode
-                          ? "text-[#cfc2ad]/55"
-                          : "text-[#1c1412]/45"
-                      }`}
-                    >
+                    <p className="font-space-mono text-sm uppercase tracking-[0.08em] text-ink/45">
                       Email
                     </p>
 
-                    <p
-                      className={`font-glacial mt-1 text-base transition-colors ${
-                        darkMode
-                          ? "text-[#f2e8d5] group-hover:text-[#d9a9a9]"
-                          : "text-[#1c1412] group-hover:text-[#8f2d2d]"
-                      }`}
-                    >
-                      nevamuren@gmail.com
+                    <p className="font-glacial mt-1 text-base transition-colors group-hover:text-accent sm:text-lg">
+                      {EMAIL}
                     </p>
                   </div>
 
-                  <span
-                    className={`font-glacial text-2xl transition-transform duration-300 group-hover:translate-x-1 ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
-                    ↗
-                  </span>
+                  {emailCopied ? (
+                    <span className="font-space-mono text-sm text-accent">
+                      Copied ✓
+                    </span>
+                  ) : (
+                    <span className="font-glacial text-2xl transition-transform duration-300 group-hover:translate-x-1">
+                      ↗
+                    </span>
+                  )}
                 </a>
 
                 {/* LinkedIn */}
                 <a
-                  href="https://www.linkedin.com/"
+                  href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center justify-between border-t py-4 transition-colors ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15"
-                      : "border-[#1c1412]/15"
-                  }`}
+                  className="group flex items-center justify-between border-t border-ink/15 py-4"
                 >
                   <div>
-                    <p
-                      className={`font-space-mono text-xs uppercase tracking-[0.08em] ${
-                        darkMode
-                          ? "text-[#cfc2ad]/55"
-                          : "text-[#1c1412]/45"
-                      }`}
-                    >
+                    <p className="font-space-mono text-sm uppercase tracking-[0.08em] text-ink/45">
                       LinkedIn
                     </p>
 
-                    <p
-                      className={`font-glacial mt-1 text-base transition-colors ${
-                        darkMode
-                          ? "text-[#f2e8d5] group-hover:text-[#d9a9a9]"
-                          : "text-[#1c1412] group-hover:text-[#8f2d2d]"
-                      }`}
-                    >
-                      Connect with me on LinkedIn
+                    <p className="font-glacial mt-1 text-base transition-colors group-hover:text-accent sm:text-lg">
+                      {CONTACT_LINKEDIN_LABEL}
                     </p>
                   </div>
 
-                  <span
-                    className={`font-glacial text-2xl transition-transform duration-300 group-hover:translate-x-1 ${
-                      darkMode
-                        ? "text-[#f2e8d5]"
-                        : "text-[#1c1412]"
-                    }`}
-                  >
+                  <span className="font-glacial text-2xl transition-transform duration-300 group-hover:translate-x-1">
                     ↗
                   </span>
                 </a>
 
                 {/* Bottom Border */}
-                <div
-                  className={`border-t ${
-                    darkMode
-                      ? "border-[#f2e8d5]/15"
-                      : "border-[#1c1412]/15"
-                  }`}
-                />
-
+                <div className="border-t border-ink/15" />
               </div>
             </div>
           </div>
         </div>
       </section>
-
     </main>
-
     
   );
 }
