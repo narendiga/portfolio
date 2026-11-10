@@ -825,11 +825,11 @@ export default function Home() {
           </div>
 
           {/* Contact Content */}
-          <div className="mt-7 grid items-start gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <div className="mt-10 grid items-start gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-4">
 
             {/* Letter Image */}
             <div className="flex items-start justify-center lg:-mt-45 lg:justify-start">
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-md lg:-ml-12">
                 <Image
                   src="/contact/letter.png"
                   alt="A letter inviting you to connect"
