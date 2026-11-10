@@ -75,7 +75,7 @@ export const EXPERIENCES: {
     date: "Nov — Dec 2025",
     highlights: [
       "Guided **22 students across 2 groups** in designing IT performance KPIs across the four IT Balanced Scorecard perspectives and building interactive Power BI dashboards, as part of a 3-assistant team supporting **60+ students across 6 groups**.",
-      "Advised students in defining **KPI formulas** and **targets** and structuring data models in **Power BI**, translating operational data into KPI cards, trend charts, and perspective-level views.",
+      "Advised students in defining KPI formulas and targets and structuring data models in Power BI, translating operational data into KPI cards, trend charts, and perspective-level views.",
       "Evaluated dashboards across **3 progress checkpoints** and the final presentation on KPI relevance, calculation accuracy, and readability, helping both groups deliver complete 4-perspective dashboards.",
     ],
     tags: ["Power BI", "KPI Design", "Data Modeling", "Data Visualization"],
@@ -90,7 +90,7 @@ export const PROJECTS_HEADLINE =
   "Building with data, solving problems, and learning along the way.";
 
 export const PROJECTS_INTRO =
-  "A selection of projects across data analytics, data engineering, and optimization — built through personal initiative, coursework, and hands-on problem solving.";
+  "A selection of projects across data analytics, data engineering, optimization, and DevOps — built through personal initiative, coursework, and hands-on problem solving.";
 
 export const PROJECTS: {
   category: string;
@@ -176,6 +176,33 @@ export const PROJECTS: {
       { src: "/projects/pdi-workflow-2.png", alt: "Pentaho ETL workflow, part 2" },
     ],
   },
+  {
+    category: "DevOps",
+    type: "Academic Project",
+    year: "2025",
+    title: "DevOps Automation for Student Data Management System",
+    description:
+      "A team project building a CRUD-based web application for managing student data, integrated with full DevOps automation to streamline the development and deployment process.",
+    explored:
+      "Built the application with **PHP and MySQL**, containerized it with **Docker**, and worked with teammates through real-world challenges such as deployment errors, authentication issues, and pipeline debugging.",
+    keyWork:
+      "Configured **CI/CD pipelines with GitHub Actions** to automate building, testing (PHPUnit), and deploying to **Google Cloud Run**, and implemented performance monitoring with **Prometheus and Grafana**.",
+    tags: [
+      "Docker",
+      "GitHub Actions",
+      "Google Cloud Run",
+      "Prometheus",
+      "Grafana",
+      "PHP",
+      "MySQL",
+    ],
+    images: [
+      {
+        src: "/projects/devops-app.png",
+        alt: "Student data management web application running on a laptop",
+      },
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------
@@ -252,6 +279,8 @@ export const JOURNEY: {
 // SKILLS (tidak ditampilkan)
 // ---------------------------------------------------------------------
 
+// TIDAK DIPAKAI di website saat ini (tampilan chip skill ditiadakan).
+// Data ini disimpan supaya bisa dipakai lagi kapan saja, atau hapus saja.
 export const SKILLS: { group: string; items: string[] }[] = [
   {
     group: "Data Analysis & Business Intelligence",
@@ -337,13 +366,18 @@ export const SKILLS: { group: string; items: string[] }[] = [
 
 export const CERTIFICATIONS_HEADLINE =
   "Sharpening my skills, one course at a time.";
+// Judul awalmu: "Learning & Credentials"
 
 export const CERTIFICATIONS_INTRO =
   "Structured courses that strengthened my skills in SQL, Excel, data analysis, and development fundamentals.";
 
+// URL profil LinkedIn: dipakai di Certifications dan Contact.
 export const LINKEDIN_URL = "https://www.linkedin.com/in/naifa-mumtazah-rendiga/";
 export const CERTIFICATIONS_LINK_LABEL = "More credentials on LinkedIn";
 
+// Urutan di sini = urutan di website (mengikuti CV).
+//   description  : penjelasan singkat, dirangkum dari detail materi kursus
+//   competencies : "Key Competencies" dari CV, tampil sebagai chip
 export const CERTIFICATIONS: {
   title: string;
   issuer: string;
